@@ -26,7 +26,9 @@
                 <h3>Product Name</h3>
                 <p>Description of the product.</p>
                 <p>Price: $XX.XX</p>
-                <button>Add to Cart</button>
+                <button onclick="payWithPayPal()">Pay with PayPal</button>
+                <button onclick="payWithStripe()">Pay with Credit/Debit Card</button>
+                <button onclick="payWithUSDT()">Pay with USDT</button>
             </div>
             <!-- Repeat for other products -->
         </section>
@@ -34,5 +36,55 @@
     <footer>
         <p>&copy; 2024 Combat Interactive. All rights reserved.</p>
     </footer>
+    <script>
+        async function payWithPayPal() {
+            const response = await fetch('/api/payments/paypal/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ amount: 10.00, currency: 'USD' })
+            });
+            const data = await response.json();
+            if (data.approval_url) {
+                window.location.href = data.approval_url;
+            } else {
+                alert('Payment failed');
+            }
+        }
+
+        async function payWithStripe() {
+            const stripe = Stripe('YOUR_STRIPE_PUBLIC_KEY');
+            const response = await fetch('/api/payments/stripe/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ amount: 10.00, currency: 'USD', source: 'tok_visa' }) // Replace 'tok_visa' with actual source/token from Stripe Elements
+            });
+            const data = await response.json();
+            if (data.success) {
+                alert('Payment successful');
+            } else {
+                alert('Payment failed');
+            }
+        }
+
+        async function payWithUSDT() {
+            const response = await fetch('/api/payments/usdt/process', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ amount: 10.00, walletAddress: 'YOUR_USDT_WALLET_ADDRESS' })
+            });
+            const data = await response.json();
+            if (data.success) {
+                alert(data.message);
+            } else {
+                alert('Payment failed');
+            }
+        }
+    </script>
 </body>
 </html>
