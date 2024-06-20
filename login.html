@@ -21,7 +21,7 @@
     <main>
         <section class="auth">
             <h2>Login</h2>
-            <form action="login_process.php" method="POST">
+            <form id="loginForm">
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" required>
                 
@@ -36,5 +36,29 @@
     <footer>
         <p>&copy; 2024 Combat Interactive. All rights reserved.</p>
     </footer>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const username = event.target.username.value;
+            const password = event.target.password.value;
+            
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            });
+            
+            const data = await response.json();
+            if (response.ok) {
+                localStorage.setItem('token', data.token);
+                alert('Login successful!');
+                // Redirect to home page or dashboard
+            } else {
+                alert(data.message || 'Login failed');
+            }
+        });
+    </script>
 </body>
 </html>
