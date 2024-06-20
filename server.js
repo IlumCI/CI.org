@@ -16,3 +16,6 @@ mongoose.connect('mongodb://localhost:27017/combat-interactive', {
 .catch(err => console.log(err));
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+const paymentRoutes = require('./routes/payments');
+
+app.use('/api/payments', paymentRoutes);
